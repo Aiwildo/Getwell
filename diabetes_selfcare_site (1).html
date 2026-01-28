@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Self-Healing for Diabetes</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f2f2f2; }
+    header { background: #4CAF50; color: white; padding: 20px; text-align: center; }
+    main { padding: 20px; max-width: 900px; margin: auto; }
+    h2 { color: #333; }
+    input, button, textarea { padding: 10px; margin: 5px 0; width: 100%; }
+    button { background: #4CAF50; color: white; border: none; cursor: pointer; }
+    button:hover { background: #45a049; }
+    .dashboard, .suggestions, .login, .register { background: white; padding: 20px; margin-top: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+    th { background-color: #4CAF50; color: white; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Self-Healing for Diabetes</h1>
+    <p>Track your health and get AI-powered lifestyle guidance</p>
+  </header>
+
+  <main>
+    <div class="login" id="loginSection">
+      <h2>Login</h2>
+      <input type="text" id="username" placeholder="Username">
+      <input type="password" id="password" placeholder="Password">
+      <button onclick="login()">Login</button>
+      <p>Don't have an account? <a href="#" onclick="showRegister()">Register</a></p>
+    </div>
+
+    <div class="register" id="registerSection" style="display:none;">
+      <h2>Register</h2>
+      <input type="text" id="regUsername" placeholder="Username">
+      <input type="password" id="regPassword" placeholder="Password">
+      <button onclick="register()">Register</button>
+      <p>Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
+    </div>
+
+    <div id="mainContent" style="display:none;">
+      <h2>Upload Diagnostic Report</h2>
+      <input type="file" id="report" accept=".pdf,.jpg,.png">
+      <button onclick="analyzeReport()">Analyze Report</button>
+
+      <div class="dashboard" id="dashboard" style="display:none;">
+        <h2>Your Health Dashboard</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Blood Sugar (mg/dL)</th>
+              <th>HbA1c (%)</th>
+            </tr>
+          </thead>
+          <tbody id="healthData"></tbody>
+        </table>
+      </div>
+
+      <div class="suggestions" id="suggestions" style="display:none;">
+        <h2>Your Personalized Suggestions</h2>
+        <ul id="suggestionList"></ul>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let users = {};
+    let currentUser = null;
+    let healthHistory = {};
+
+    function showRegister() {
+      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('registerSection').style.display = 'block';
+    }
+
+    function showLogin() {
+      document.getElementById('registerSection').style.display = 'none';
+      document.getElementById('loginSection').style.display = 'block';
+    }
+
+    function register() {
+      const username = document.getElementById('regUsername').value;
+      const password = document.getElementById('regPassword').value;
+      if(username && password && !users[username]) {
+        users[username] = password;
+        healthHistory[username] = [];
+        alert('Registration successful!');
+        showLogin();
+      } else {
+        alert('Username taken or invalid');
+      }
+    }
+
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      if(users[username] && users[username] === password) {
+        currentUser = username;
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+        alert('Login successful!');
+      } else {
+        alert('Invalid username or password');
+      }
+    }
+
+    function analyzeReport() {
+      if(!currentUser) return;
+      const newEntry = {
+        date: new Date().toLocaleDateString(),
+        bloodSugar: Math.floor(Math.random() * (180 - 90 + 1)) + 90,
+        hba1c: (Math.random() * (8 - 5) + 5).toFixed(1)
+      };
+
+      healthHistory[currentUser].push(newEntry);
+
+      const tableBody = document.getElementById('healthData');
+      tableBody.innerHTML = '';
+      healthHistory[currentUser].forEach(entry => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${entry.date}</td><td>${entry.bloodSugar}</td><td>${entry.hba1c}</td>`;
+        tableBody.appendChild(row);
+      });
+      document.getElementById('dashboard').style.display = 'block';
+
+      const suggestions = [
+        'Increase daily intake of leafy greens and fiber-rich foods.',
+        'Include 30 mins of walking or light exercise daily.',
+        'Monitor blood sugar before and after meals.',
+        'Practice mindfulness or meditation 10 mins/day.',
+        'Stay hydrated and reduce sugary drinks.'
+      ];
+      const list = document.getElementById('suggestionList');
+      list.innerHTML = '';
+      suggestions.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = item;
+        list.appendChild(li);
+      });
+      document.getElementById('suggestions').style.display = 'block';
+
+      alert('Report analyzed and dashboard updated!');
+    }
+  </script>
+</body>
+</html>
